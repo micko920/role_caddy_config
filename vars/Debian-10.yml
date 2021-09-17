@@ -1,0 +1,5 @@
+---
+__caddy_version: "1"
+__caddy_bin_path: "/usr/lib/caddy/bin"
+__caddy_config_path: "/etc/caddy"
+

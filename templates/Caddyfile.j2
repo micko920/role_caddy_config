@@ -1,0 +1,73 @@
+{{ ansible_managed | comment }}
+# The Caddyfile is an easy way to configure your Caddy web server.
+#
+# Unless the file starts with a global options block, the first
+# uncommented line is always the address of your site.
+#
+# To use your own domain name (with automatic HTTPS), first make
+# sure your domain's A/AAAA DNS records are properly pointed to
+# this machine's public IP, then replace ":80" below with your
+# domain name.
+{
+#    debug
+    admin off
+    log {
+        output file /var/log/caddy/access.log {
+                roll_size 1gb
+                roll_keep 5
+                roll_keep_for 720h
+        }
+    }
+    email {{ ca_certificate_email }}
+    default_sni {{ public_fqdn }}
+	local_certs
+	skip_install_trust
+}
+
+(cors) {
+	@origin header Origin {args.0}
+	header_down @origin Access-Control-Allow-Origin "{args.0}"
+	header_down @origin Access-Control-Request-Method GET
+}
+
+(cors_reg) {
+  @{args.0} header_regexp Origin {args.0}
+  header @{args.0} Access-Control-Allow-Origin {http.request.header.origin}
+  header_down @origin Access-Control-Request-Method GET,POST
+}
+
+{{ public_access_url }} {
+	tls internal
+
+    handle {{ proxy_service_1_path }} {
+      reverse_proxy {{ proxy_service_1_host }} {
+        header_down Access-Control-Allow-Origin *
+      }
+    }
+
+    handle {{ proxy_service_2_path }} {
+      reverse_proxy {{ proxy_service_2_host }} {
+        header_down Access-Control-Allow-Origin *
+      }
+    }
+}
+
+{{ public_access_url }}:3838 {
+	tls internal
+	respond "Hello, world! from 3838"
+}
+
+{{ public_access_url }}:8080 {
+	tls internal
+	respond "Goodbye, world! from 8080"
+}
+
+{{ public_access_url }}:8787 {
+	tls internal
+	respond "Goodbye, world! from 8787"
+}
+
+{{ public_access_url }}:9090 {
+	tls internal
+	respond "Goodbye, world! from 9090"
+}

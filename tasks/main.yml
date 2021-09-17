@@ -1,0 +1,21 @@
+---
+- include_tasks: is_systemd.yml
+
+# Variable configuration.
+- include_tasks: variables.yml
+
+- name: configure caddy config
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ caddy_config_path }}/{{ item }}"
+  with_items:
+    - Caddyfile
+  notify: restart caddy
+
+- name: Configure the caddy service.
+  systemd:
+    name: caddy
+    state: "{{ caddy_state }}"
+    enabled: "{{ caddy_enabled_at_boot }}"
+  when: systemd_pid_1 is defined and systemd_pid_1
+

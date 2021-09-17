@@ -1,0 +1,11 @@
+---
+caddy_state: started
+caddy_enabled_at_boot: true
+
+ca_certificate_email: accounts@enviroaccounts.com
+public_fqdn: dev.gfoi.info
+public_access_url: "localhost"
+proxy_service_1_path: "/api/*"
+proxy_service_1_host: "http://192.158.2.125:8082"
+proxy_service_2_path: "*"
+proxy_service_2_host: "http://192.168.2.125:6080"
