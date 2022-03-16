@@ -32,6 +32,15 @@
 {{ public_access_url }} {
     tls internal
 
+{% if static_files is defined %}
+{% for static in static_files %}
+    handle_path {{ static.path }} {
+      root * {{ static.root }}
+      file_server
+    }
+{% endfor %}
+{% endif %}
+
 {% if proxy_services is defined %}
 {% for proxy in proxy_services %}
     handle {{ proxy.path }} {
@@ -44,14 +53,6 @@
 {% endfor %}
 {% endif %}
 
-{% if static_files is defined %}
-{% for static in static_files %}
-    handle {{ static.path }} {
-      root * {{ static.root }}
-      file_server
-    }
-{% endfor %}
-{% endif %}
 
 {% if proxy_config is defined %}
     {{ proxy_config }}
